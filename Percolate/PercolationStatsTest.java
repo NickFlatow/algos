@@ -1,22 +1,21 @@
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import org.junit.Before;
+// import org.junit.Test;
+// import static org.junit.Assert.assertEquals;
+// import org.junit.Before;
 
 
 
-public class PercolationStatsTest { 
+// public class PercolationStatsTest { 
 
-    private Percolation p;
+//     private Percolation p;
 
-    @Before
-    public void init(){
-        p = new Percolation(3);
-    }
-
-
+//     @Before
+//     public void init(){
+//         p = new Percolation(3);
+//     }
 
 
 
-    //TODO write test for intGrid size two
-    //why is this not regualry .66?
-}
+
+//     //TODO write test for intGrid size two
+//     //why is this not regualry .66?
+// }
