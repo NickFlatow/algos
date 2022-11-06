@@ -9,7 +9,7 @@ public class ReadFile {
   
   public static void main(String[] args) {
     ReadFile rf = new ReadFile();
-    rf.readFile("./testfiles/input10.txt");
+    rf.readFile("./testfiles/input7.txt");
   }
 
   public void readFile(String file){
@@ -28,16 +28,19 @@ public class ReadFile {
           int col = Integer.parseInt(splited[1]);
           // System.out.println("System Percolates: " + p.percolates());
 
-          this.p.open(row,col);
-          if(p.numberOfOpenSites() == 56){
-            p.printBoolGrid();
-            System.out.println(p.isFull(9,1));
+          this.p.open(row,col);          
+          // p.printBoolGrid();
+          // System.out.println();
+          if(p.numberOfOpenSites() == 12){
+            System.out.println("is full: " + p.isFull(6,1));
           }
+          // System.out.println("peroclates " + p.percolates());
+
         }
 
       }
-      p.printBoolGrid();
-      System.out.println("peroclates " + p.percolates());
+      // p.printBoolGrid();
+      // System.out.println("peroclates " + p.percolates());
       myReader.close();
     } catch (FileNotFoundException e) {
       System.out.println("An error occurred.");

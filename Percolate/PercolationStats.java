@@ -6,7 +6,6 @@ public class PercolationStats {
 
     private double[] samples;
     private static final double CONFIDENCE_95 = 1.96;
-    // double mean;
     // perform independent trials on an n-by-n grid
     public PercolationStats(int n, int trials){
         this.IllegalArgumentExceptionCheck(n, trials);
@@ -59,9 +58,6 @@ public class PercolationStats {
 
    // test client (see below)
    public static void main(String[] args){
-    //TODO Test 12: check that exception is thrown if either n or trials is out of bounds
-
-
 
     // Test 7: check that PercolationStats calls open() until system percolates(What?)
         int gridsize = Integer.parseInt(args[0]);
