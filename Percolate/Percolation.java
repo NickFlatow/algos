@@ -2,8 +2,7 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
    
-
-    private boolean[][] percBoolGrid;
+    private boolean[][] boolGrid;
     private WeightedQuickUnionUF backwashUf;
     private WeightedQuickUnionUF normalUf;
     private int virtaulTop = 0;
@@ -14,50 +13,36 @@ public class Percolation {
     public Percolation(int n) {
         if (n <= 0){ throw new IllegalArgumentException(); }
 
-        boolean [][] boolGrid = new boolean[n][n];
-        this.percBoolGrid = boolGrid;
+        this.boolGrid  = new boolean[n][n];
         this.virtaulBottom = n*n + 1;
         this.backwashUf = new WeightedQuickUnionUF(n * n + 2);
         this.normalUf = new WeightedQuickUnionUF(n * n + 1); //without bottom index;
     }
     private void IllegalArgumentExceptionCheck(int row, int col) {
-        if ((row < 1 || row > this.percBoolGrid.length) || (col < 1 || col > this.percBoolGrid.length)){
+        if ((row < 1 || row > this.boolGrid.length) || (col < 1 || col > this.boolGrid.length)){
             throw new IllegalArgumentException("Illegal  Argument for intGrid");
         }
     }
 
     private int getCellIndex(int row, int col) {
-        return (row-1) * this.percBoolGrid.length + (col -1);
+        return (row-1) * this.boolGrid.length + (col -1);
         // return this.perc_intGrid[row-1][col-1];
     }
     private boolean getBoolGridCell(int row, int col) {
-        return this.percBoolGrid[row-1][col-1];
+        return this.boolGrid[row-1][col-1];
     }
     private void openSite(int row, int col){
-        this.percBoolGrid[row-1][col-1] = true;
+        this.boolGrid[row-1][col-1] = true;
 
         if (row == 1){
             this.backwashUf.union(this.getCellIndex(row, col),this.virtaulTop);
             this.normalUf.union(this.getCellIndex(row, col),this.virtaulTop);
         }
-        if(row == this.percBoolGrid.length){
+        if(row == this.boolGrid.length){
             this.backwashUf.union(this.getCellIndex(row, col),this.virtaulBottom);
         }
 
         this.openSites++;
-    }
-
-    public void printBoolGrid(){
-        for (int i = 0; i < this.percBoolGrid.length;i++ ){
-            for(int j = 0; j < this.percBoolGrid[i].length; j++){
-                if(this.percBoolGrid[i][j]){
-                    System.out.print("\u001B[32m" +"[" +this.percBoolGrid[i][j] + " ] " + "\u001B[0m");
-                }else{
-                    System.out.print("\u001B[31m" +"[" +this.percBoolGrid[i][j] + "] " + "\u001B[0m");
-                }
-            }
-            System.out.println();
-        }
     }
 
     //Grid from 1-n
@@ -76,11 +61,11 @@ public class Percolation {
             backwashUf.union(this.getCellIndex(row, col-1),this.getCellIndex(row, col));
             normalUf.union(this.getCellIndex(row, col-1),this.getCellIndex(row, col));
         }
-        if (col + 1 <= this.percBoolGrid.length && isOpen(row,col+1)) {
+        if (col + 1 <= this.boolGrid.length && isOpen(row,col+1)) {
             backwashUf.union(this.getCellIndex(row, col+1),this.getCellIndex(row, col));
             normalUf.union(this.getCellIndex(row, col+1),this.getCellIndex(row, col));
         }
-        if (row + 1 <= this.percBoolGrid.length && isOpen(row + 1,col)) {
+        if (row + 1 <= this.boolGrid.length && isOpen(row + 1,col)) {
             backwashUf.union(this.getCellIndex(row +1 , col),this.getCellIndex(row, col));
             normalUf.union(this.getCellIndex(row +1 , col),this.getCellIndex(row, col));
         }
@@ -114,11 +99,5 @@ public class Percolation {
 
 
     // // test client (optional)
-    // public static void main(String[] args){
-        
-    //     Percolation p = new Percolation(1);
-    //     p.printBoolGrid();
-    //     System.out.println("Percolates?: " + p.percolates());
-
-    // }
+    // public static void main(String[] args)
 }
