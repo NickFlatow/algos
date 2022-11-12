@@ -1,5 +1,6 @@
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+// import edu.princeton.cs.algs4.StdOut;
 
 public class Deque<Item> implements Iterable<Item> 
 // public class Deque<Item>
@@ -67,9 +68,9 @@ public class Deque<Item> implements Iterable<Item>
         }
         Item item = first.item;
         first = first.next;
+        this.count--;
         if (isEmpty()) last = first;
         else first.prev = null;
-        this.count--;
         return item;
     }
 
@@ -80,10 +81,9 @@ public class Deque<Item> implements Iterable<Item>
         }
         Item item = last.item;
         last = last.prev;
-        last.next = null;
         this.count--;
         if (isEmpty()) first = last;
-    
+        else{last.next = null;}
         return item;
     }
 
@@ -91,11 +91,14 @@ public class Deque<Item> implements Iterable<Item>
     public Iterator<Item> iterator(){
         return new DequeIterator();
     }
-    private class DequeIterator implements Iterator<Item>{
+    private class DequeIterator implements Iterator<Item> {
         private Node current = first;
         public boolean hasNext() {return current != null;}
         public void remove() {throw new UnsupportedOperationException();}
-        public Item next(){ 
+        public Item next() { 
+            if (current == null){
+                throw new NoSuchElementException();
+            }
             Item item = current.item;
             current = current.next;
             return item;
@@ -107,23 +110,13 @@ public class Deque<Item> implements Iterable<Item>
         Deque<Integer> d = new Deque<Integer>();
         StdOut.println(d.isEmpty());
         d.addLast(4);
-        d.addLast(3);
-        StdOut.println("count:" + d.size());
-        
+        StdOut.println(d.size());
         d.addFirst(5);
-        d.removeFirst();
         d.removeLast();
-
+        d.removeFirst();
         for(Integer i: d){
             StdOut.println(i);
         }
-        //test when addFirst and deque is empty 
-        //test addLast after addFirst
-
-
-        //test removeLast
-
-        //test removeLast isEmpty case
 
     }
 
