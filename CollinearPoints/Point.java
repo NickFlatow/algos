@@ -110,9 +110,9 @@ public class Point implements Comparable<Point> {
             double p1Slope = slopeTo(p1);
             double p2Slope = slopeTo(p2);
            
-            StdOut.println(Point.this);
-            StdOut.println(p1);
-            StdOut.println(p2);
+            // StdOut.println(Point.this);
+            // StdOut.println(p1);
+            // StdOut.println(p2);
 
             if (p1Slope < p2Slope) return -1;
             if (p2Slope < p1Slope) return 1;
@@ -140,47 +140,87 @@ public class Point implements Comparable<Point> {
      */
     public static void main(String[] args) {
         /* YOUR CODE HERE */
-        Point[] points = new Point[100];
-        int i = 0;
-        for (int y = 0; y < 10; y++){
-            for (int x = 0; x < 10; x++){
-                points[i] = new Point(x,y);
-                i++;
-            }
-        }
 
-        // StdOut.println(points[0].slopeTo(points[64]));
-        // StdOut.println(points[10].slopeTo(points[16]));
-        // StdOut.println(points[10].slopeTo(points[30]));
-        StdOut.println(points[0].slopeTo(points[99]));
-        StdOut.println(points[0].slopeTo(points[44]));
 
-        Comparator<Point> asf = points[0].slopeOrder();
-        StdOut.println(asf.compare(points[10], points[22]));
+        Point[] points = new Point[11];
+        /*four line segemetns no connection*/
+        // Point p = new Point(0, 0);
+        // Point q = new Point(10, 1);
+        // Point r = new Point(7, 2);
+        // Point s = new Point(3, 9);
+
+        /*one line segment */
+        // Point p = new Point(0, 0);
+        // Point q = new Point(1, 1);
+        // Point r = new Point(2, 2);
+        // Point s = new Point(3, 3);
+
+        /*one line segment and a point */
+
+        //test in random order
+        Point p = new Point(-1, 12);
+        Point q = new Point(2, 2);
+        Point r = new Point(3, 3);
+        Point s = new Point(4, 4);
+        Point t = new Point(5,5);
+        Point u = new Point(3,7);
+        Point v = new Point(2,-4);
+        Point w = new Point(12,5);
+        Point x = new Point(5,2);
+        Point y = new Point(17,8);
+        Point z = new Point(9,2);
+        points[0] = p;
+        points[1] = q;
+        points[2] = r;
+        points[3] = s;
+        points[4] = t;
+        points[5] = u;
+        points[6] = v;
+        points[7] = w;
+        points[8] = x;
+        points[9] = y;
+        points[10] = z;
+
+
+        BruteCollinearPoints bcp = new BruteCollinearPoints(points);
+        StdOut.println("number of line segments: " + bcp.numberOfSegments());
+        LineSegment[] ls  = bcp.segments();
+
+
+
+        // StdOut.println(points[0].slopeTo(points[99]));
+        // StdOut.println(points[0].slopeTo(points[44]));
+
+        // Comparator<Point> asf = points[0].slopeOrder();
+        // StdOut.println(asf.compare(points[10], points[22]));
         
-        StdDraw.setPenRadius(0.025);
+        StdDraw.setPenRadius(0.015);
         StdDraw.enableDoubleBuffering();
-        StdDraw.setXscale(-1, 10);
-        StdDraw.setYscale(-1, 10);
+        StdDraw.setXscale(-10, 20);
+        StdDraw.setYscale(-10, 20);
         StdDraw.setPenColor(StdDraw.BLACK);
-        for (Point p : points) {
-            p.draw();
+        for (Point point : points) {
+            point.draw();
+            // points[0].drawTo(point);
         }
-        // points[0].drawTo(points[64]);
-        // points[10].drawTo(points[16]);
-        // points[10].drawTo(points[30]);
-        points[0].drawTo(points[99]);
+        for (LineSegment l : ls) {
+            StdOut.println(l);
+            // l.draw();
+        }
+
         StdDraw.show();
 
-        //standard case 
-        assert points[0].compareTo(points[1]) == -1;
-        //same point
-        assert points[0].compareTo(points[0]) == 0;
-        // y equal x different 
-        // StdOut.println(points[0].compareTo(points[10]) == 1);
-        assert points[0].compareTo(points[10]) == -1;
 
-        assert points[44].compareTo(points[64]) == -1;
+
+        // //standard case 
+        // assert points[0].compareTo(points[1]) == -1;
+        // //same point
+        // assert points[0].compareTo(points[0]) == 0;
+        // // y equal x different 
+        // // StdOut.println(points[0].compareTo(points[10]) == 1);
+        // assert points[0].compareTo(points[10]) == -1;
+
+        // assert points[44].compareTo(points[64]) == -1;
         
     }
 }
