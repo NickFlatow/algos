@@ -1,7 +1,7 @@
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-// import edu.princeton.cs.algs4.StdRandom;
-// import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
+import edu.princeton.cs.algs4.StdOut;
 
 public class RandomizedQueue<Item> implements Iterable<Item> {
     private Item[] itemArray;
@@ -46,7 +46,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
         return item;
     }
-    //move null to the end of the array
+
     private void swap(int i, int count){
         Item tmp = itemArray[count];
         itemArray[count] = itemArray[i];
@@ -60,8 +60,6 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }        
         itemArray = copy;
     }
-
-    // return a random item (but do not remove it)
     public Item sample() {
         if (count <= 0){
             throw new NoSuchElementException();
@@ -77,40 +75,52 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
 
     private class RandomizedQueueIterator implements Iterator<Item> {
-        private int i = 0;
-        private int countLength = count;
-        public boolean hasNext() {return i < count; }
-        public void remove() {throw new UnsupportedOperationException();}
-        public Item next() { 
-            if (i >= count){
+        private int current = 0;
+        private Item[] itemsRandom = (Item[]) new Object[count];
+
+        public RandomizedQueueIterator() {
+            for (int i = 0; i < count; i++) {
+                itemsRandom[i] = itemArray[i];
+            }
+            StdRandom.shuffle(itemsRandom);
+        }
+
+        public Item next() {
+            if (current >= count) {
                 throw new NoSuchElementException();
             }
-            Item item = itemArray[i];
-            i++;
-            return item;
+            return itemsRandom[current++];
+        }
+
+        public boolean hasNext() {
+            return current < count;
         }
     }
     // unit testing (required)
     public static void main(String[] args) {
         RandomizedQueue<Integer> rq = new RandomizedQueue<Integer>();
         rq.enqueue(1);
-        rq.enqueue(2);
-        rq.enqueue(3);
-        rq.enqueue(4);
-        rq.enqueue(5);
-        // StdOut.println(rq.isEmpty());
-        // StdOut.println(rq.size());
-        // StdOut.println(rq.sample());
+        // rq.enqueue(2);
+        // rq.enqueue(3);
+        // rq.enqueue(4);
+        // rq.enqueue(5);
+        // rq.enqueue(6);
+        // rq.enqueue(7);
+        // rq.enqueue(8);
+        // rq.enqueue(9);
+        // rq.enqueue(10);
+        StdOut.println(rq.isEmpty());
+        StdOut.println(rq.size());
+        
+        StdOut.println(rq.sample());
         rq.dequeue();
-        
-        
         for (Integer i: rq){
             StdOut.println(i);
         }
-        StdOut.println("Start of Two");
-        for (Integer i: rq){
-            StdOut.println(i);
-        }
+        // StdOut.println("Start of Two");
+        // for (Integer i: rq){
+        //     StdOut.println(i);
+        // }
     }
 
 }

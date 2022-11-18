@@ -1,0 +1,6 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "/usr/local/lift/lib/algs4.jar"
+    ]
+}
