@@ -3,8 +3,8 @@ import java.util.Comparator;
 
 public class BruteCollinearPoints {
     // finds all line segments containing 4 points
-    Point[] points;
-    LineSegment[] ls;
+    private Point[] points;
+    private LineSegment[] ls;
     public BruteCollinearPoints(Point[] points) {
         if (points == null){
             throw new IllegalArgumentException();

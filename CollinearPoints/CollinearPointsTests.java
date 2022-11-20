@@ -1,4 +1,8 @@
 import org.junit.Test;
+
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdOut;
+
 import static org.junit.Assert.assertEquals;
 
 public class CollinearPointsTests {
@@ -153,6 +157,81 @@ public class CollinearPointsTests {
         assertEquals("(-2, 2) -> (-5, 5)",ls[0].toString());
         assertEquals("(2, 2) -> (5, 5)",ls[1].toString());
         
+    }
+
+    @Test
+    public void Input6FastTest() {
+
+        In in = new In("./testfiles/input6.txt");
+        int n = in.readInt();
+        Point[] points = new Point[n];
+        for (int i = 0; i < n; i++) {
+            int x = in.readInt();
+            int y = in.readInt();
+            points[i] = new Point(x, y);
+        }
+
+        FastCollinearPoints bcp = new FastCollinearPoints(points);
+        LineSegment[] ls  = bcp.segments();
+        assertEquals("(14000, 10000) -> (32000, 10000)",ls[0].toString());
+
+        // draw the points
+        // StdDraw.setPenRadius(0.015);
+        // StdDraw.enableDoubleBuffering();
+        // StdDraw.setXscale(0, 32768);
+        // StdDraw.setYscale(0, 32768);
+        // for (Point p : points) {
+        //     p.draw();
+        // }
+        // StdDraw.show();
+
+        // print and draw the line segments
+        // FastCollinearPoints collinear = new FastCollinearPoints(points);
+        // for (LineSegment segment : collinear.segments()) {
+        //     StdOut.println(segment);
+        //     segment.draw();
+        // }
+
+
+
+    }
+    @Test
+    public void Input8FastTest() {
+
+        In in = new In("./testfiles/input8.txt");
+        int n = in.readInt();
+        Point[] points = new Point[n];
+        for (int i = 0; i < n; i++) {
+            int x = in.readInt();
+            int y = in.readInt();
+            points[i] = new Point(x, y);
+        }
+
+        FastCollinearPoints bcp = new FastCollinearPoints(points);
+        LineSegment[] ls  = bcp.segments();
+        assertEquals("(3000, 4000) -> (20000, 21000)",ls[1].toString());
+        assertEquals("(0, 10000) -> (10000, 0)",ls[0].toString());
+
+    }
+
+
+    @Test
+    public void Input8BruteTest() {
+
+        In in = new In("./testfiles/input8.txt");
+        int n = in.readInt();
+        Point[] points = new Point[n];
+        for (int i = 0; i < n; i++) {
+            int x = in.readInt();
+            int y = in.readInt();
+            points[i] = new Point(x, y);
+        }
+
+        BruteCollinearPoints bcp = new BruteCollinearPoints(points);
+        LineSegment[] ls  = bcp.segments();
+        assertEquals("(10000, 0) -> (0, 10000)",ls[0].toString());
+        assertEquals("(3000, 4000) -> (20000, 21000)",ls[1].toString());
+
     }
 
 }

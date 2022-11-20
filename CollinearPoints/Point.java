@@ -9,6 +9,8 @@
  ******************************************************************************/
 
 import java.util.Comparator;
+
+// import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
 
@@ -61,12 +63,15 @@ public class Point implements Comparable<Point> {
      */
     public double slopeTo(Point that) {
         /* YOUR CODE HERE */
-        double deltaY = that.y - this.y;
-        double deltaX = that.x - this.x;
-
-        if (deltaX == 0) { return Double.NEGATIVE_INFINITY; }
-        if (deltaY == 0) { return Double.POSITIVE_INFINITY; }
-        return deltaY/deltaX;
+        if (this.x == that.x) {
+            return this.y == that.y ?
+                    Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
+        }
+        // avoid "-0.0".
+        if (this.y == that.y) {
+            return 0.0;
+        }
+        return (this.y - that.y) * 1.0 / (this.x - that.x);
     }
 
     /**
@@ -146,87 +151,43 @@ public class Point implements Comparable<Point> {
      */
     public static void main(String[] args) {
         /* YOUR CODE HERE */
+        // Point p = new Point(0,7);
+        // Point q = new Point(0,9);
 
 
-        Point[] points = new Point[11];
-        /*four line segemetns no connection*/
-        // Point p = new Point(0, 0);
-        // Point q = new Point(10, 1);
-        // Point r = new Point(7, 2);
-        // Point s = new Point(3, 9);
-
-        /*one line segment */
-        // Point p = new Point(0, 0);
-        // Point q = new Point(1, 1);
-        // Point r = new Point(2, 2);
-        // Point s = new Point(3, 3);
-
-        /*one line segment and a point */
-
-        //test in random order
-        Point p = new Point(-1, 12);
-        Point q = new Point(2, 2);
-        Point r = new Point(3, 3);
-        Point s = new Point(4, 4);
-        Point t = new Point(5,5);
-        Point u = new Point(3,7);
-        Point v = new Point(2,-4);
-        Point w = new Point(12,5);
-        Point x = new Point(5,2);
-        Point y = new Point(17,8);
-        Point z = new Point(9,2);
-        points[0] = p;
-        points[1] = q;
-        points[2] = r;
-        points[3] = s;
-        points[4] = t;
-        points[5] = u;
-        points[6] = v;
-        points[7] = w;
-        points[8] = x;
-        points[9] = y;
-        points[10] = z;
+        Point p = new Point(371, 440);
+        Point q = new Point(154, 223);
+        StdOut.println(p.slopeTo(q));
 
 
-        BruteCollinearPoints bcp = new BruteCollinearPoints(points);
-        StdOut.println("number of line segments: " + bcp.numberOfSegments());
-        LineSegment[] ls  = bcp.segments();
+        // read the n points from a file
+        // In in = new In(args[0]);
+        // In in = new In("./testfiles/input8.txt");
+        // int n = in.readInt();
+        // Point[] points = new Point[n];
+        // for (int i = 0; i < n; i++) {
+        //     int x = in.readInt();
+        //     int y = in.readInt();
+        //     points[i] = new Point(x, y);
+        // }
 
+        // // draw the points
+        // StdDraw.setPenRadius(0.015);
+        // StdDraw.enableDoubleBuffering();
+        // StdDraw.setXscale(0, 32768);
+        // StdDraw.setYscale(0, 32768);
+        // for (Point p : points) {
+        //     p.draw();
+        // }
+        // StdDraw.show();
 
-
-        // StdOut.println(points[0].slopeTo(points[99]));
-        // StdOut.println(points[0].slopeTo(points[44]));
-
-        // Comparator<Point> asf = points[0].slopeOrder();
-        // StdOut.println(asf.compare(points[10], points[22]));
-        
-        StdDraw.setPenRadius(0.015);
-        StdDraw.enableDoubleBuffering();
-        StdDraw.setXscale(-10, 20);
-        StdDraw.setYscale(-10, 20);
-        StdDraw.setPenColor(StdDraw.BLACK);
-        for (Point point : points) {
-            point.draw();
-            // points[0].drawTo(point);
-        }
-        for (LineSegment l : ls) {
-            StdOut.println(l);
-            // l.draw();
-        }
-
-        StdDraw.show();
-
-
-
-        // //standard case 
-        // assert points[0].compareTo(points[1]) == -1;
-        // //same point
-        // assert points[0].compareTo(points[0]) == 0;
-        // // y equal x different 
-        // // StdOut.println(points[0].compareTo(points[10]) == 1);
-        // assert points[0].compareTo(points[10]) == -1;
-
-        // assert points[44].compareTo(points[64]) == -1;
+        // // print and draw the line segments
+        // FastCollinearPoints collinear = new FastCollinearPoints(points);
+        // for (LineSegment segment : collinear.segments()) {
+        //     StdOut.println(segment);
+        //     segment.draw();
+        // }
+        // // StdDraw.show();
         
     }
 }
