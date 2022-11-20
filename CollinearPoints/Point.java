@@ -99,8 +99,9 @@ public class Point implements Comparable<Point> {
      */
     public Comparator<Point> slopeOrder() {
         /* YOUR CODE HERE */
-        Comparator<Point> cso = new SlopeOrder();
-        return cso;
+        // Comparator<Point> cso = new SlopeOrder();
+        // return cso;
+        return new SlopeOrder();
     }
 
     private class SlopeOrder implements Comparator<Point> {
@@ -110,12 +111,17 @@ public class Point implements Comparable<Point> {
             double p1Slope = slopeTo(p1);
             double p2Slope = slopeTo(p2);
            
-            // StdOut.println(Point.this);
-            // StdOut.println(p1);
-            // StdOut.println(p2);
+            // StdOut.println("start");
+            // StdOut.println("ponts.this: " + Point.this);
+            // StdOut.println("p1: " + p1);
+            // StdOut.println("p2: " + p2);
+            // StdOut.println("p1Slope " + p1Slope);
+            // StdOut.println("p2Slope " + p2Slope);
+            // StdOut.println("end");
 
             if (p1Slope < p2Slope) return -1;
-            if (p2Slope < p1Slope) return 1;
+            if (p1Slope > p2Slope) return 1;
+            // if (p2Slope < p1Slope) return 1;
             return 0;
 
         }
