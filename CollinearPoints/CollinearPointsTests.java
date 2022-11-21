@@ -210,7 +210,7 @@ public class CollinearPointsTests {
         FastCollinearPoints bcp = new FastCollinearPoints(points);
         LineSegment[] ls  = bcp.segments();
         assertEquals("(3000, 4000) -> (20000, 21000)",ls[1].toString());
-        assertEquals("(0, 10000) -> (10000, 0)",ls[0].toString());
+        assertEquals("(10000, 0) -> (0, 10000)",ls[0].toString());
 
     }
 
@@ -233,5 +233,88 @@ public class CollinearPointsTests {
         assertEquals("(3000, 4000) -> (20000, 21000)",ls[1].toString());
 
     }
+
+
+    // @Test
+    // public void BruteNullTest() {
+
+    //     In in = new In("./testfiles/input8.txt");
+    //     int n = in.readInt();
+    //     Point[] points = new Point[n + 1];
+    //     for (int i = 0; i < n; i++) {
+    //         int x = in.readInt();
+    //         int y = in.readInt();
+    //         points[i] = new Point(x, y);
+    //     }
+    //     points[8] = null;
+
+    //     BruteCollinearPoints bcp = new BruteCollinearPoints(points);
+    //     LineSegment[] ls  = bcp.segments();
+    //     assertEquals("(10000, 0) -> (0, 10000)",ls[0].toString());
+    //     assertEquals("(3000, 4000) -> (20000, 21000)",ls[1].toString());
+
+    // }
+
+
+
+    // @Test
+    // public void FastEquidistant() {
+
+    //     In in = new In("./testfiles/equidistant.txt");
+    //     int n = in.readInt();
+    //     Point[] points = new Point[n];
+    //     for (int i = 0; i < n; i++) {
+    //         int x = in.readInt();
+    //         int y = in.readInt();
+    //         points[i] = new Point(x, y);
+    //     }
+
+    //     FastCollinearPoints bcp = new FastCollinearPoints(points);
+    //     LineSegment[] ls  = bcp.segments();
+    //     assertEquals("(10000, 0) -> (0, 10000)",ls[0].toString());
+    //     assertEquals("(3000, 4000) -> (20000, 21000)",ls[1].toString());
+
+    // }
+
+
+    @Test
+    public void BruteDuplicateTest() {
+
+        In in = new In("./testfiles/duplicates.txt");
+        int n = in.readInt();
+        Point[] points = new Point[n];
+        for (int i = 0; i < n; i++) {
+            int x = in.readInt();
+            int y = in.readInt();
+            points[i] = new Point(x, y);
+        }
+
+        BruteCollinearPoints bcp = new BruteCollinearPoints(points);
+        LineSegment[] ls  = bcp.segments();
+        // assertEquals("(10000, 0) -> (0, 10000)",ls[0].toString());
+        // assertEquals("(3000, 4000) -> (20000, 21000)",ls[1].toString());
+
+    }
+
+    @Test
+    public void FastInput40() {
+
+        In in = new In("./testfiles/input40.txt");
+        int n = in.readInt();
+        Point[] points = new Point[n];
+        for (int i = 0; i < n; i++) {
+            int x = in.readInt();
+            int y = in.readInt();
+            points[i] = new Point(x, y);
+        }
+
+        FastCollinearPoints bcp = new FastCollinearPoints(points);
+        LineSegment[] ls  = bcp.segments();
+        assertEquals("(10000, 0) -> (0, 10000)",ls[0].toString());
+        assertEquals("(3000, 4000) -> (20000, 21000)",ls[1].toString());
+
+    }
+
+
 
 }
