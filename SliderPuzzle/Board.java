@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 
 import javax.naming.directory.ModificationItem;
 
@@ -129,37 +130,37 @@ public class Board {
 
         //find and swap n,s,e,w if with in array boundries
         if (blankTile[0] - 1 >= 0 ) {
-            //swap with -1 
-            swap(blankTile[0],blankTile[1],-1,"row");
+            int[] swapTile = {blankTile[0] - 1,blankTile[1]};
+            swap(blankTile,swapTile);
             //add to boards
             boards.add(new Board(tiles));
             //swap back for next
-            swap(blankTile[0],blankTile[1],-1,"row");
+            swap(blankTile,swapTile);
         }
         if (blankTile[0] + 1 < n ) {
-            //swap with -1 
-            swap(blankTile[0],blankTile[1],1,"row");
+            int[] swapTile = {blankTile[0] + 1,blankTile[1]};
+            swap(blankTile,swapTile);
             //add to boards
             boards.add(new Board(tiles));
             //swap back for next
-            swap(blankTile[0],blankTile[1],1,"row");
+            swap(blankTile,swapTile);
         }
 
         if (blankTile[1] - 1 >= 0 ) {
-            //swap with -1 
-            swap(blankTile[0],blankTile[1],-1,"col");
+            int[] swapTile = {blankTile[0],blankTile[1]-1};
+            swap(blankTile,swapTile);
             //add to boards
             boards.add(new Board(tiles));
             //swap back for next
-            swap(blankTile[0],blankTile[1],-1,"col");
+            swap(blankTile,swapTile);
         }
         if (blankTile[1] + 1 < n ) {
-            //swap with -1 
-            swap(blankTile[0],blankTile[1],1,"col");
+            int[] swapTile = {blankTile[0],blankTile[1]+1};
+            swap(blankTile,swapTile);
             //add to boards
             boards.add(new Board(tiles));
             //swap back for next
-            swap(blankTile[0],blankTile[1],1,"col");
+            swap(blankTile,swapTile);
         }
 
         return boards;
@@ -173,21 +174,11 @@ public class Board {
         return new int[] {-5,-5};
     }
 
-    private void swap(int row, int col,int modfiyByThisValue,String which) {
+    private void swap(int[] blankTile, int[]swapTile) {
         // StdOut.println(toString());
-
-        if (which == "row") {
-            int tmp = tiles[row][col];
-            // int modifedValue = Math.abs(modfied + modfiyByThisValue);
-            tiles[row][col] = tiles[row + modfiyByThisValue][col]; 
-            tiles[row + modfiyByThisValue][col] = tmp;
-        }
-        if (which == "col") {
-            int tmp = tiles[row][col];
-            // int modifedValue = Math.abs(modfied + modfiyByThisValue);
-            tiles[row][col] = tiles[row][col + modfiyByThisValue];
-            tiles[row][col + modfiyByThisValue] = tmp;
-        }
+        int tmp = tiles[blankTile[0]][blankTile[1]];
+        tiles[blankTile[0]][blankTile[1]] = tiles[swapTile[0]][swapTile[1]];
+        tiles[swapTile[0]][swapTile[1]] = tmp;
         // StdOut.println(toString());
     }
 
@@ -204,24 +195,22 @@ public class Board {
             row = StdRandom.uniformInt(n);
             col = StdRandom.uniformInt(n);
         }
-        while (tiles[swapRow][swapCol] == 0) {
-            row = StdRandom.uniformInt(n);
-            col = StdRandom.uniformInt(n);
+        while (tiles[swapRow][swapCol] == 0 || (tiles[swapRow][swapCol] == tiles[row][col])) {
+            swapRow = StdRandom.uniformInt(n);
+            swapCol = StdRandom.uniformInt(n);
         }
+        StdOut.println("row col : " + tiles[row][col]);
+        StdOut.println("swap : " + tiles[swapRow][swapCol]);
 
-        int tmp  = tiles[row][col];
-        tiles[row][col] = tiles[swapRow][swapCol];
-        tiles[swapRow][swapCol] = tmp;
+        swap(new int[] {row,col},new int[]{swapRow,swapCol});
 
         Board twin =  new Board(tiles);
 
-        int tmp2  = tiles[row][col];
-        tiles[row][col] = tiles[swapRow][swapCol];
-        tiles[swapRow][swapCol] = tmp2;
-
+        swap(new int[] {row,col},new int[]{swapRow,swapCol});
         return twin;
 
     }
+
 
     // unit testing (not graded)
     public static void main(String[] args) {
@@ -239,8 +228,9 @@ public class Board {
     
         // solve the slider puzzle
         Board initial = new Board(tiles);
-        StdOut.println(initial.twin());
         StdOut.println(initial.toString());
+        StdOut.println(initial.twin());
+        // StdOut.println(initial.toString());
         // StdOut.println(initial.toString());
         
         // for(Board b :initial.neighbors()){
