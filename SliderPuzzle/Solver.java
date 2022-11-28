@@ -12,23 +12,66 @@ public class Solver {
     BoardOrder bo = new BoardOrder();
     int moves = 0;
     Stack<Board> boards;
+    GameTree gameTree;
+    boolean first = true;
     // find a solution to the initial board (using the A* algorithm)
     public Solver(Board initial) {
         this.initial = initial;
         minPq = new MinPQ<Solver>(bo);
+
         minPq.insert(this);
+
         boards = new Stack<Board>();
+        // gameTree = new GameTree(this.initial);
+        gameTree = new GameTree();
+
     }
 
-    // private class BoardOrder implements Comparator<Board> {
-        
-    //     @Override
-    //     public int compare(Board b1, Board b2) {
-    //         if (b1.manhattan() + moves < b2.manhattan() + moves) return -1;
-    //         if (b1.manhattan() + moves > b2.manhattan() + moves) return 1;
-    //         return 0;
-    //     }
-    // }
+    private class GameNode {
+        Board board;
+        GameNode prev;
+
+        public GameNode(Board board) {
+            this.board = board;
+            prev = null;
+        }
+    }
+    private class GameTree {
+        GameNode root = null;
+        Stack<GameNode> nodes;
+        // GameNode parentNode = root;
+
+        // public GameTree(Board board) {
+        public GameTree() {
+            // root = new GameNode(initial);
+            nodes = new Stack<GameNode>();
+            // nodes.push(root);
+        }
+
+        public void push(Board board) {
+            GameNode gn = new GameNode(board);
+            gn.prev = root;
+            nodes.push(gn);
+        }
+
+        public GameNode getParent() {
+            // if (nodes.isEmpty()) {
+            //     return null;
+            // }
+            // return nodes.peek();
+            return root;
+        }
+        public void setRoot(Board b) {
+            if (root != null ) {
+                GameNode oldRoot = root;
+                root = new GameNode(b);
+                root.prev = oldRoot;
+            } else {
+                root = new GameNode(b);
+            }
+
+        }
+    }
 
     private class BoardOrder implements Comparator<Solver> {
         
@@ -39,7 +82,11 @@ public class Solver {
             return 0;
         }
     }
+
+
+
     // is the initial board solvable? (see below)
+    //TODO
     // public boolean isSolvable()
 
     // min number of moves to solve initial board; -1 if unsolvable
@@ -52,36 +99,86 @@ public class Solver {
 
         boards.push(minPq.min().initial);
         if(minPq.min().initial.isGoal()) {
+            StdOut.println("=================== BOARDS ====================");
+            for(Board b: boards) {
+                StdOut.print(b);
+            }
+            StdOut.println("=================== BOARDS ====================");
             return boards;
         }
-
-
-        // minPq = new MinPQ<Solver>(bo);
-        // minPq.insert(new Solver(initial));
-        minPq.forEach(s -> {
-            // StdOut.println(s.initial.toString());
-            // s.moves++;
-            for (Board b :s.initial.neighbors()) {
-                Solver mySolver = new Solver(b);
-                mySolver.moves++;
-                minPq.insert(mySolver);
-            }
-            
-            // StdOut.println("Manhattan = " + s.initial.manhattan());
-            // StdOut.println("moves     = " + s.moves());
-            // int priority = s.initial.manhattan() + s.moves();
-            // StdOut.println("Priority = " + priority);
-            // StdOut.println(s.initial.toString());
-        });
-        // StdOut.println("min :" + minPq.min().initial.toString());
-        StdOut.println("Manhattan = " + minPq.min().initial.manhattan());
-        StdOut.println("moves     = " + minPq.min().moves());
-        int priority = minPq.min().initial.manhattan() + minPq.min().moves();
-        StdOut.println("Priority = " + priority);
-        StdOut.print(minPq.min().initial.toString());
-        // boards.push(minPq.min().initial);
+    
+        Solver s = minPq.min();
+        // GameNode parentNode = new GameNode(s.initial);
+        gameTree.setRoot(s.initial);
         minPq.delMin();
-        this.moves++;
+
+        // gameTree.push(s.initial);
+        GameNode parentNode = gameTree.getParent();
+        // GameNode parentNode = new GameNode(s.initial);
+
+        StdOut.println("=================== TREE ====================");
+        StdOut.println(parentNode.board);
+        if (parentNode.prev != null) { 
+            StdOut.println(parentNode.prev.board);
+        }else {
+            StdOut.println(null);
+        }
+        StdOut.println("=================== TREE ====================");
+
+        s.moves++;
+        for (Board b: s.initial.neighbors()) {
+            gameTree.push(b);
+            Solver mySolver = new Solver(b);
+            // mySolver.moves++;
+            mySolver.moves += s.moves();
+            
+            // StdOut.println("neighbor board b :"); 
+            
+            // int priority = mySolver.initial.manhattan() + mySolver.moves();
+            
+            // StdOut.println("Priority  = " + priority);
+            // StdOut.println("Manhattan = " + b.manhattan());
+            // StdOut.println("moves     = " + mySolver.moves());
+            // StdOut.println(b.toString());
+
+            // StdOut.println(gameTree.min().initial.toString());
+
+            // gameTree.insert(mySolver);
+
+
+
+            //TODO UPDATE PARENT NODE ON EACH ITERATION
+            // GameNode parentCheck = gameTree.peek();
+            if (parentNode.prev != null && mySolver.initial.equals(parentNode.prev.board)) continue;
+            
+            minPq.insert(mySolver);
+            
+
+        }
+        
+
+        // StdOut.println("=================== MIN ====================");
+        // StdOut.print(minPq.min().initial.toString());
+        // StdOut.println("=================== MIN ====================");
+
+        // this.moves++;
+
+        // StdOut.println("=================== BOARDS ====================");
+        // for(Board b: boards) {
+        //     StdOut.print(b);
+        // }
+        // StdOut.println("=================== BOARDS ====================");
+
+        StdOut.println("=================== minPq ====================");
+        minPq.forEach(solver -> {
+            int primmy = solver.moves() + solver.initial.manhattan();
+            StdOut.println("Priority  = " + primmy);
+            StdOut.println("moves     = " + solver.moves());
+            StdOut.println("Manhattan = " + solver.initial.manhattan());
+            StdOut.println("\r" +solver.initial.toString());
+        });
+        StdOut.println("=================== minPq ====================");
+
 
         this.solution();
 
