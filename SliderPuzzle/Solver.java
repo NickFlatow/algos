@@ -1,30 +1,27 @@
-import java.util.ArrayList;
+
 import java.util.Comparator;
 import java.util.Stack;
 
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.StdOut;
 
 public class Solver {
     
-    Board initial;
-    MinPQ<Solver> minPq;
-    BoardOrder bo = new BoardOrder();
-    int moves = 0;
-    Stack<Board> boards;
-    GameTree gameTree;
-    boolean first = true;
+    private Board initial;
+    private MinPQ<Solver> minPq;
+    private BoardOrder bo = new BoardOrder();
+    private int moves = 0;
+    private Stack<Board> boards;
+    private GameTree gameTree;
+    
     // find a solution to the initial board (using the A* algorithm)
     public Solver(Board initial) {
         this.initial = initial;
         minPq = new MinPQ<Solver>(bo);
-
         minPq.insert(this);
-
         boards = new Stack<Board>();
-        // gameTree = new GameTree(this.initial);
         gameTree = new GameTree();
-
     }
 
     private class GameNode {
@@ -38,27 +35,19 @@ public class Solver {
     }
     private class GameTree {
         GameNode root = null;
-        Stack<GameNode> nodes;
-        // GameNode parentNode = root;
+        // Stack<GameNode> nodes;
 
-        // public GameTree(Board board) {
         public GameTree() {
-            // root = new GameNode(initial);
-            nodes = new Stack<GameNode>();
-            // nodes.push(root);
+            // nodes = new Stack<GameNode>();
         }
 
         public void push(Board board) {
             GameNode gn = new GameNode(board);
             gn.prev = root;
-            nodes.push(gn);
+            // nodes.push(gn);
         }
 
         public GameNode getParent() {
-            // if (nodes.isEmpty()) {
-            //     return null;
-            // }
-            // return nodes.peek();
             return root;
         }
         public void setRoot(Board b) {
@@ -87,7 +76,9 @@ public class Solver {
 
     // is the initial board solvable? (see below)
     //TODO
-    // public boolean isSolvable()
+    public boolean isSolvable() {
+        return true;
+    }
 
     // min number of moves to solve initial board; -1 if unsolvable
     public int moves() {
@@ -99,11 +90,11 @@ public class Solver {
 
         boards.push(minPq.min().initial);
         if(minPq.min().initial.isGoal()) {
-            StdOut.println("=================== BOARDS ====================");
-            for(Board b: boards) {
-                StdOut.print(b);
-            }
-            StdOut.println("=================== BOARDS ====================");
+            // StdOut.println("=================== BOARDS ====================");
+            // for(Board b: boards) {
+            //     StdOut.print(b);
+            // }
+            // StdOut.println("=================== BOARDS ====================");
             return boards;
         }
     
@@ -116,16 +107,16 @@ public class Solver {
         GameNode parentNode = gameTree.getParent();
         // GameNode parentNode = new GameNode(s.initial);
 
-        StdOut.println("=================== TREE ====================");
-        StdOut.println(parentNode.board);
-        if (parentNode.prev != null) { 
-            StdOut.println(parentNode.prev.board);
-        }else {
-            StdOut.println(null);
-        }
-        StdOut.println("=================== TREE ====================");
+        // StdOut.println("=================== TREE ====================");
+        // StdOut.println(parentNode.board);
+        // if (parentNode.prev != null) { 
+        //     StdOut.println(parentNode.prev.board);
+        // }else {
+        //     StdOut.println(null);
+        // }
+        // StdOut.println("=================== TREE ====================");
 
-        s.moves++;
+        this.moves++;
         for (Board b: s.initial.neighbors()) {
             gameTree.push(b);
             Solver mySolver = new Solver(b);
@@ -145,10 +136,6 @@ public class Solver {
 
             // gameTree.insert(mySolver);
 
-
-
-            //TODO UPDATE PARENT NODE ON EACH ITERATION
-            // GameNode parentCheck = gameTree.peek();
             if (parentNode.prev != null && mySolver.initial.equals(parentNode.prev.board)) continue;
             
             minPq.insert(mySolver);
@@ -169,15 +156,15 @@ public class Solver {
         // }
         // StdOut.println("=================== BOARDS ====================");
 
-        StdOut.println("=================== minPq ====================");
-        minPq.forEach(solver -> {
-            int primmy = solver.moves() + solver.initial.manhattan();
-            StdOut.println("Priority  = " + primmy);
-            StdOut.println("moves     = " + solver.moves());
-            StdOut.println("Manhattan = " + solver.initial.manhattan());
-            StdOut.println("\r" +solver.initial.toString());
-        });
-        StdOut.println("=================== minPq ====================");
+        // StdOut.println("=================== minPq ====================");
+        // minPq.forEach(solver -> {
+        //     int primmy = solver.moves() + solver.initial.manhattan();
+        //     StdOut.println("Priority  = " + primmy);
+        //     StdOut.println("moves     = " + solver.moves());
+        //     StdOut.println("Manhattan = " + solver.initial.manhattan());
+        //     StdOut.println("\r" +solver.initial.toString());
+        // });
+        // StdOut.println("=================== minPq ====================");
 
 
         this.solution();
@@ -188,14 +175,22 @@ public class Solver {
     // test client (see below) 
     public static void main(String[] args) {
 
-        int n = 3;
-        int[] rand = new int[] {0,1,3,4,2,5,7,8,6};
-        int k = 0;
+        // int n = 3;
+        // int[] rand = new int[] {0,1,3,4,2,5,7,8,6};
+        // int k = 0;
+        // int[][] tiles = new int[n][n];
+        // for (int i = 0; i < n; i++) {
+        //     for (int j = 0; j < n; j++) {
+        //         tiles [i][j] = rand[k];
+        //         k++;
+        //     }
+        // }
+        In in = new In("./8puzzle/puzzle14.txt");
+        int n = in.readInt();
         int[][] tiles = new int[n][n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                tiles [i][j] = rand[k];
-                k++;
+                tiles[i][j] = in.readInt();  
             }
         }
         
@@ -203,7 +198,14 @@ public class Solver {
         // solve the slider puzzle
         Board initial = new Board(tiles);
         Solver solver = new Solver(initial);
-        solver.solution();
+        for (Board board: solver.solution()) {
+            StdOut.println(board);
+        }
+        StdOut.println(solver.moves());
+        // StdOut.println(solver.initial.toString());
+        // for(Board b: solver.initial.neighbors()) {
+        //     StdOut.println(b.toString());
+        // }
 
     }
 }

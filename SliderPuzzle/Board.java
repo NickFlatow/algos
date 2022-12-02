@@ -1,28 +1,41 @@
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 
-import javax.naming.directory.ModificationItem;
-
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 
 public class Board {
 
-    int n;
-    int [][] tiles;
-    int [][] goalBoard = {{1,2,3}, {4,5,6}, {7,8,0}};
-
+    private int n;
+    private int [][] tiles;
+    private int [][] goalBoard;
+    private int [] blankTile;
+    
     // create a board from an n-by-n array of tiles,
     // where tiles[row][col] = tile at (row, col)
     public Board(int[][] tiles) {
+        if (tiles == null) {
+            throw new IllegalArgumentException("tiles == null");
+        }    
+        int goalCount = 1;
         this.n = tiles.length;
+
+        this.goalBoard = new int[n][n];
         this.tiles = new int[n][n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++){
+                
                 this.tiles[i][j] = tiles[i][j];
+                goalBoard[i][j] = goalCount;
+                
+                if (tiles[i][j] == 0) blankTile = new int[] {i ,j};
+                
+                goalCount++;
             }
         }
+        goalBoard[n-1][n-1] = 0;
     }
                                            
     // string representation of this board
@@ -35,14 +48,6 @@ public class Board {
             }
             s.append("\n");
         }
-
-        // s.append("\n");
-        // for (int i = 0; i < n ; i++) {
-        //     for (int j = 0; j < n; j++){
-        //         s.append(String.format("%2d ", goalBoard[i][j]));
-        //     }
-        //     s.append("\n");
-        // }
         return s.toString();
     }
 
@@ -121,92 +126,78 @@ public class Board {
 
     // all neighboring boards
     public Iterable<Board> neighbors() {
-        ArrayList<Board> boards = new ArrayList<Board>();
-        //0 row, 1 col
-        int [] blankTile = new int [2];
-
-        // find location of blank tile
-        blankTile = findBlankTile();
+        Stack<Board> boards = new Stack<Board>();
 
         //find and swap n,s,e,w if with in array boundries
         if (blankTile[0] - 1 >= 0 ) {
             int[] swapTile = {blankTile[0] - 1,blankTile[1]};
-            swap(blankTile,swapTile);
-            //add to boards
-            boards.add(new Board(tiles));
-            //swap back for next
-            swap(blankTile,swapTile);
+            boards.push(swapBlankTile(blankTile,swapTile));
+            
         }
         if (blankTile[0] + 1 < n ) {
             int[] swapTile = {blankTile[0] + 1,blankTile[1]};
-            swap(blankTile,swapTile);
-            //add to boards
-            boards.add(new Board(tiles));
-            //swap back for next
-            swap(blankTile,swapTile);
+            boards.push(swapBlankTile(blankTile,swapTile));
         }
 
         if (blankTile[1] - 1 >= 0 ) {
             int[] swapTile = {blankTile[0],blankTile[1]-1};
-            swap(blankTile,swapTile);
-            //add to boards
-            boards.add(new Board(tiles));
-            //swap back for next
-            swap(blankTile,swapTile);
+            boards.push(swapBlankTile(blankTile,swapTile));
         }
         if (blankTile[1] + 1 < n ) {
             int[] swapTile = {blankTile[0],blankTile[1]+1};
-            swap(blankTile,swapTile);
-            //add to boards
-            boards.add(new Board(tiles));
-            //swap back for next
-            swap(blankTile,swapTile);
+            boards.push(swapBlankTile(blankTile,swapTile));
         }
 
         return boards;
     }
-    private int[] findBlankTile() {
-        for (int row = 0; row < n; row++) {
-            for (int col = 0; col < n; col++) {
-                if (tiles[row][col] == 0) return new int[] {row ,col};
-            }
-        }
-        return new int[] {-5,-5};
+
+    private void swap(int[][] copy, int[] blankTile, int[]swapTile) {
+        // StdOut.println(toString());
+        int tmp = copy[blankTile[0]][blankTile[1]];
+        copy[blankTile[0]][blankTile[1]] = tiles[swapTile[0]][swapTile[1]];
+        copy[swapTile[0]][swapTile[1]] = tmp;
+        // StdOut.println(toString());
     }
 
-    private void swap(int[] blankTile, int[]swapTile) {
-        // StdOut.println(toString());
-        int tmp = tiles[blankTile[0]][blankTile[1]];
-        tiles[blankTile[0]][blankTile[1]] = tiles[swapTile[0]][swapTile[1]];
-        tiles[swapTile[0]][swapTile[1]] = tmp;
-        // StdOut.println(toString());
+    private Board swapBlankTile(int[] blankTile, int[]swapTile) {
+        int[][] copy = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {      
+                copy[i][j] = tiles[i][j];
+            }
+        }
+        swap(copy, blankTile,swapTile);
+        return new Board(copy);
     }
 
     // a board that is obtained by exchanging any pair of tiles
     public Board twin() {
 
-        //TODO SWAP BACK?
+        int[][] copy = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {      
+                copy[i][j] = tiles[i][j];
+            }
+        }
 
-        int row = 0;
-        int col = 1;
-        int swapRow = n-1;
-        int swapCol = n-1;
-        while (tiles[row][col] == 0) {
+        int row = StdRandom.uniformInt(n);;
+        int col = StdRandom.uniformInt(n);;
+        int swapRow = StdRandom.uniformInt(n);;
+        int swapCol = StdRandom.uniformInt(n);;
+        while (copy[row][col] == 0) {
             row = StdRandom.uniformInt(n);
             col = StdRandom.uniformInt(n);
         }
-        while (tiles[swapRow][swapCol] == 0 || (tiles[swapRow][swapCol] == tiles[row][col])) {
+        while (copy[swapRow][swapCol] == 0 || (copy[swapRow][swapCol] == copy[row][col])) {
             swapRow = StdRandom.uniformInt(n);
             swapCol = StdRandom.uniformInt(n);
         }
-        StdOut.println("row col : " + tiles[row][col]);
-        StdOut.println("swap : " + tiles[swapRow][swapCol]);
+        // StdOut.println("row col : " + tiles[row][col]);
+        // StdOut.println("swap : " + tiles[swapRow][swapCol]);
 
-        swap(new int[] {row,col},new int[]{swapRow,swapCol});
+        swap(copy,new int[] {row,col},new int[]{swapRow,swapCol});
 
-        Board twin =  new Board(tiles);
-
-        swap(new int[] {row,col},new int[]{swapRow,swapCol});
+        Board twin =  new Board(copy);
         return twin;
 
     }
@@ -214,24 +205,38 @@ public class Board {
 
     // unit testing (not graded)
     public static void main(String[] args) {
-        int n = 3;
-        int[] rand = new int[] {1,0,3,4,2,5,7,8,6};
-        int k = 0;
+        In in = new In("./8puzzle/puzzle16.txt");
+        int n = in.readInt();
         int[][] tiles = new int[n][n];
+        int[][] tiles1 = new int[n][n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                tiles [i][j] = rand[k];
-                k++;
+                tiles[i][j] = in.readInt();
+                tiles1[i][j] = tiles[i][j];    
             }
         }
-        
     
         // solve the slider puzzle
+        Board fin = new Board(tiles1);
         Board initial = new Board(tiles);
+        StdOut.println(initial.isGoal());
         StdOut.println(initial.toString());
         StdOut.println(initial.twin());
+        StdOut.println(initial.dimension());
+        StdOut.println(initial.hamming());
+        StdOut.println(initial.manhattan());
+        StdOut.println(initial.equals(fin));
+        StdOut.println(initial.neighbors());
         // StdOut.println(initial.toString());
-        // StdOut.println(initial.toString());
+
+
+        // for (int i = 0; i < 20000; i++) { 
+        //     Board twin1 = initial.twin();
+        //     Board twin2 = initial.twin();
+        //     if (twin1.equals(twin2)) {
+        //         StdOut.println("duplicate");
+        //     }
+        // }
         
         // for(Board b :initial.neighbors()){
         //     StdOut.println(b);
