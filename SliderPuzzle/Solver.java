@@ -15,6 +15,10 @@ public class Solver {
     private Stack<Board> boards;
     private GameTree gameTree;
     
+    private GameTree gameTreeTwin;
+    private MinPQ<Solver> twinMinpq;
+    private Boolean solvable = false;
+    
     // find a solution to the initial board (using the A* algorithm)
     public Solver(Board initial) {
         this.initial = initial;
@@ -22,6 +26,12 @@ public class Solver {
         minPq.insert(this);
         boards = new Stack<Board>();
         gameTree = new GameTree();
+
+        //minPq should be of type node
+        twinMinpq = new MinPQ<Solver>(bo);
+        Solver twinSolver = new Solver(initial.twin());
+        twinMinpq.insert(twinSolver);
+        gameTreeTwin = new GameTree();
     }
 
     private class GameNode {
@@ -35,16 +45,10 @@ public class Solver {
     }
     private class GameTree {
         GameNode root = null;
-        // Stack<GameNode> nodes;
-
-        public GameTree() {
-            // nodes = new Stack<GameNode>();
-        }
 
         public void push(Board board) {
             GameNode gn = new GameNode(board);
             gn.prev = root;
-            // nodes.push(gn);
         }
 
         public GameNode getParent() {
@@ -72,12 +76,10 @@ public class Solver {
         }
     }
 
-
-
     // is the initial board solvable? (see below)
-    //TODO
     public boolean isSolvable() {
-        return true;
+        solution();
+        return solvable;
     }
 
     // min number of moves to solve initial board; -1 if unsolvable
@@ -90,82 +92,50 @@ public class Solver {
 
         boards.push(minPq.min().initial);
         if(minPq.min().initial.isGoal()) {
-            // StdOut.println("=================== BOARDS ====================");
-            // for(Board b: boards) {
-            //     StdOut.print(b);
-            // }
-            // StdOut.println("=================== BOARDS ====================");
             return boards;
         }
     
         Solver s = minPq.min();
-        // GameNode parentNode = new GameNode(s.initial);
         gameTree.setRoot(s.initial);
         minPq.delMin();
 
-        // gameTree.push(s.initial);
         GameNode parentNode = gameTree.getParent();
-        // GameNode parentNode = new GameNode(s.initial);
-
-        // StdOut.println("=================== TREE ====================");
-        // StdOut.println(parentNode.board);
-        // if (parentNode.prev != null) { 
-        //     StdOut.println(parentNode.prev.board);
-        // }else {
-        //     StdOut.println(null);
-        // }
-        // StdOut.println("=================== TREE ====================");
 
         this.moves++;
+
         for (Board b: s.initial.neighbors()) {
             gameTree.push(b);
+            
             Solver mySolver = new Solver(b);
-            // mySolver.moves++;
             mySolver.moves += s.moves();
             
-            // StdOut.println("neighbor board b :"); 
-            
-            // int priority = mySolver.initial.manhattan() + mySolver.moves();
-            
-            // StdOut.println("Priority  = " + priority);
-            // StdOut.println("Manhattan = " + b.manhattan());
-            // StdOut.println("moves     = " + mySolver.moves());
-            // StdOut.println(b.toString());
-
-            // StdOut.println(gameTree.min().initial.toString());
-
-            // gameTree.insert(mySolver);
-
             if (parentNode.prev != null && mySolver.initial.equals(parentNode.prev.board)) continue;
             
             minPq.insert(mySolver);
-            
-
         }
-        
 
-        // StdOut.println("=================== MIN ====================");
-        // StdOut.print(minPq.min().initial.toString());
-        // StdOut.println("=================== MIN ====================");
+        if(twinMinpq.min().initial.isGoal()) {
+            solvable = false;
+        }
+    
+        Solver twinS = twinMinpq.min();
+        gameTreeTwin.setRoot(twinS.initial);
+        twinMinpq.delMin();
+
+        GameNode twinParentNode = gameTreeTwin.getParent();
 
         // this.moves++;
 
-        // StdOut.println("=================== BOARDS ====================");
-        // for(Board b: boards) {
-        //     StdOut.print(b);
-        // }
-        // StdOut.println("=================== BOARDS ====================");
-
-        // StdOut.println("=================== minPq ====================");
-        // minPq.forEach(solver -> {
-        //     int primmy = solver.moves() + solver.initial.manhattan();
-        //     StdOut.println("Priority  = " + primmy);
-        //     StdOut.println("moves     = " + solver.moves());
-        //     StdOut.println("Manhattan = " + solver.initial.manhattan());
-        //     StdOut.println("\r" +solver.initial.toString());
-        // });
-        // StdOut.println("=================== minPq ====================");
-
+        for (Board b: twinS.initial.neighbors()) {
+            gameTreeTwin.push(b);
+            
+            Solver twinSolver = new Solver(b);
+            twinSolver.moves += twinS.moves();
+            
+            if (twinParentNode.prev != null && twinSolver.initial.equals(twinParentNode.prev.board)) continue;
+            
+            twinMinpq.insert(twinSolver);
+        }
 
         this.solution();
 
@@ -175,18 +145,9 @@ public class Solver {
     // test client (see below) 
     public static void main(String[] args) {
 
-        // int n = 3;
-        // int[] rand = new int[] {0,1,3,4,2,5,7,8,6};
-        // int k = 0;
-        // int[][] tiles = new int[n][n];
-        // for (int i = 0; i < n; i++) {
-        //     for (int j = 0; j < n; j++) {
-        //         tiles [i][j] = rand[k];
-        //         k++;
-        //     }
-        // }
-        In in = new In("./8puzzle/puzzle14.txt");
+        In in = new In("./8puzzle/puzzle04.txt");
         int n = in.readInt();
+
         int[][] tiles = new int[n][n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -198,14 +159,13 @@ public class Solver {
         // solve the slider puzzle
         Board initial = new Board(tiles);
         Solver solver = new Solver(initial);
-        for (Board board: solver.solution()) {
-            StdOut.println(board);
+        if (!solver.isSolvable())
+            StdOut.println("No solution possible");
+        else {
+            StdOut.println("Minimum number of moves = " + solver.moves());
+            for (Board board : solver.solution())
+                StdOut.println(board);
         }
-        StdOut.println(solver.moves());
-        // StdOut.println(solver.initial.toString());
-        // for(Board b: solver.initial.neighbors()) {
-        //     StdOut.println(b.toString());
-        // }
 
     }
 }
