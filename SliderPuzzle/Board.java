@@ -9,7 +9,7 @@ import edu.princeton.cs.algs4.StdRandom;
 public class Board {
 
     private int n;
-    private int [][] tiles;
+    private int [][] myTys;
     private int [][] goalBoard;
     private int [] blankTile;
     
@@ -23,11 +23,11 @@ public class Board {
         this.n = tiles.length;
 
         this.goalBoard = new int[n][n];
-        this.tiles = new int[n][n];
+        this.myTys = new int[n][n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++){
                 
-                this.tiles[i][j] = tiles[i][j];
+                this.myTys[i][j] = tiles[i][j];
                 goalBoard[i][j] = goalCount;
                 
                 if (tiles[i][j] == 0) blankTile = new int[] {i ,j};
@@ -44,7 +44,7 @@ public class Board {
         s.append(n + "\n");
         for (int i = 0; i < n ; i++) {
             for (int j = 0; j < n; j++){
-                s.append(String.format("%2d ", tiles[i][j]));
+                s.append(String.format("%2d ", myTys[i][j]));
             }
             s.append("\n");
         }
@@ -61,8 +61,8 @@ public class Board {
         int outOfPlaceTileCount = 0;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                if (this.tiles[i][j] == 0) continue;
-                if (this.tiles[i][j] != goalBoard[i][j]) outOfPlaceTileCount++;
+                if (this.myTys[i][j] == 0) continue;
+                if (this.myTys[i][j] != goalBoard[i][j]) outOfPlaceTileCount++;
             }
         }
         return outOfPlaceTileCount;
@@ -76,7 +76,7 @@ public class Board {
             for (int j = 0; j < n; j++) {
 
                 //get tile from tiles
-                int tile = this.tiles[i][j];
+                int tile = this.myTys[i][j];
 
                 //find that tile in goalboard
                 if (tile == 0) continue;
@@ -87,8 +87,6 @@ public class Board {
         return totalManhattanDistance;
     }
     private int[] findTileInGoalBoard(int tile) {
-        //TODO
-        //already a sorted list
         //binary serach on 2d array?
         for (int row = 0; row < n; row++) {
             int rowUpperBounds = n * row + n;
@@ -96,7 +94,6 @@ public class Board {
             if (tile > rowUpperBounds) continue; //if tile isn't in row skip and check the next row
             
             //or bin search here?
-            //TODO STOPWATCH WITH DIFFERENT VARIATIONS
             for (int col = 0; col < n; col++) { 
                 if (goalBoard[row][col] == tile) return new int[] {row , col};
             }
@@ -111,7 +108,7 @@ public class Board {
 
     // is this board the goal board?
     public boolean isGoal() {
-        return Arrays.deepEquals(tiles, goalBoard);
+        return Arrays.deepEquals(myTys, goalBoard);
     }
 
     // does this board equal y?
@@ -121,7 +118,7 @@ public class Board {
         if (y.getClass() != this.getClass()) return false;
 
         Board board = (Board) y;
-        return tiles.length == board.tiles.length && Arrays.deepEquals(tiles, board.tiles);
+        return myTys.length == board.myTys.length && Arrays.deepEquals(myTys, board.myTys);
     }
 
     // all neighboring boards
@@ -150,25 +147,26 @@ public class Board {
 
         return boards;
     }
-
-    private void swap(int[][] copy, int[] blankTile, int[]swapTile) {
-        // StdOut.println(toString());
-        int tmp = copy[blankTile[0]][blankTile[1]];
-        copy[blankTile[0]][blankTile[1]] = tiles[swapTile[0]][swapTile[1]];
-        copy[swapTile[0]][swapTile[1]] = tmp;
-        // StdOut.println(toString());
-    }
-
     private Board swapBlankTile(int[] blankTile, int[]swapTile) {
         int[][] copy = new int[n][n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {      
-                copy[i][j] = tiles[i][j];
+                copy[i][j] = myTys[i][j];
             }
         }
         swap(copy, blankTile,swapTile);
         return new Board(copy);
     }
+
+    private void swap(int[][] copy, int[] blankTile, int[]swapTile) {
+        // StdOut.println(toString());
+        int tmp = copy[blankTile[0]][blankTile[1]];
+        copy[blankTile[0]][blankTile[1]] = myTys[swapTile[0]][swapTile[1]];
+        copy[swapTile[0]][swapTile[1]] = tmp;
+        // StdOut.println(toString());
+    }
+
+
 
     // a board that is obtained by exchanging any pair of tiles
     public Board twin() {
@@ -176,28 +174,32 @@ public class Board {
         int[][] copy = new int[n][n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {      
-                copy[i][j] = tiles[i][j];
+                copy[i][j] = myTys[i][j];
             }
         }
 
-        int row = StdRandom.uniformInt(n);;
-        int col = StdRandom.uniformInt(n);;
-        int swapRow = StdRandom.uniformInt(n);;
-        int swapCol = StdRandom.uniformInt(n);;
-        while (copy[row][col] == 0) {
-            row = StdRandom.uniformInt(n);
-            col = StdRandom.uniformInt(n);
-        }
-        while (copy[swapRow][swapCol] == 0 || (copy[swapRow][swapCol] == copy[row][col])) {
-            swapRow = StdRandom.uniformInt(n);
-            swapCol = StdRandom.uniformInt(n);
-        }
+        // int row = StdRandom.uniformInt(n);
+        // int col = StdRandom.uniformInt(n);
+        // int swapRow = StdRandom.uniformInt(n);
+        // int swapCol = StdRandom.uniformInt(n);
+        // while (copy[row][col] == 0) {
+        //     row = StdRandom.uniformInt(n);
+        //     col = StdRandom.uniformInt(n);
+        // }
+        // while (copy[swapRow][swapCol] == 0 || (copy[swapRow][swapCol] == copy[row][col])) {
+        //     swapRow = StdRandom.uniformInt(n);
+        //     swapCol = StdRandom.uniformInt(n);
+        // }
         // StdOut.println("row col : " + tiles[row][col]);
         // StdOut.println("swap : " + tiles[swapRow][swapCol]);
 
-        swap(copy,new int[] {row,col},new int[]{swapRow,swapCol});
+    
 
-        Board twin =  new Board(copy);
+        if (copy[0][0] == 0 ) swap(copy,new int[] {0,1},new int[]{1,1});
+        else if (copy[0][1] == 0 ) swap(copy,new int[] {0,0},new int[]{1,0});
+        else swap(copy,new int[] {0,0},new int[]{0,1});
+
+        Board twin = new Board(copy);
         return twin;
 
     }
@@ -205,7 +207,7 @@ public class Board {
 
     // unit testing (not graded)
     public static void main(String[] args) {
-        In in = new In("./8puzzle/puzzle16.txt");
+        In in = new In(args[0]);
         int n = in.readInt();
         int[][] tiles = new int[n][n];
         int[][] tiles1 = new int[n][n];
