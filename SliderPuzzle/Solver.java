@@ -1,14 +1,17 @@
 
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.Stack;
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
+import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.StdOut;
 
 public class Solver {
     
-    private Board initial;
+    private Board initialBoard;
     
     private MinPQ<GameNode> minPq;
     private MinPQ<GameNode> twinPq;
@@ -16,40 +19,46 @@ public class Solver {
     private boolean solveable = true; 
     private BoardOrder bo = new BoardOrder();
     
-    private int moves = -1;
+    private int moves = 0;
     private Stack<Board> boards;
+
+    private GameNode solvedPuzzle;
 
     
     // find a solution to the initial board (using the A* algorithm)
     public Solver(Board initial) {
-        this.initial = initial;
+        this.initialBoard = initial;
         
+
+
         minPq = new MinPQ<GameNode>(bo);
-        GameNode root = new GameNode(initial, null);
+        GameNode root = new GameNode(initialBoard, null);
         root.priority = root.board.manhattan() + this.moves;
         minPq.insert(root);        
 
 
         twinPq = new MinPQ<GameNode>(bo);
-        GameNode twinRoot = new GameNode(initial.twin(), null);
+        GameNode twinRoot = new GameNode(initialBoard.twin(), null);
         twinRoot.priority = twinRoot.board.manhattan() + this.moves;
         twinPq.insert(twinRoot);
 
         boards = new Stack<Board>();
-        solvePuzzle();
+        solvedPuzzle = solvePuzzle();
 
     }
-    private void solvePuzzle() {
+    private GameNode solvePuzzle() {
         boolean solved = false;
         while (!solved) {
             
             GameNode parentNode = minPq.delMin();
             
-            boards.push(parentNode.board);
+            // boards.push(parentNode.board);
             
             if(parentNode.board.isGoal()) {
-                solved = true;
+                // solved = true;
+                return parentNode;
             }
+
 
             
             StdOut.println("=================== Parent  ====================");
@@ -63,12 +72,13 @@ public class Solver {
     
                 GameNode childNode = new GameNode(board, parentNode.board);
 
-                
-                if (parentNode.prev != null && childNode.board.equals(parentNode.prev.board)) continue;
 
-                    childNode.priority = board.manhattan() + this.moves;
+                if (parentNode.prev != null && childNode.board.equals(parentNode.prev.board)) continue;
+                    childNode.prev = parentNode;
+                    childNode.moves = parentNode.moves + 1;
+                    childNode.priority = board.manhattan() + childNode.moves;
                     StdOut.println("priotiry  = " + childNode.priority);
-                    StdOut.println("moves     = "  + this.moves);
+                    StdOut.println("moves     = "  + childNode.moves);
                     StdOut.println("manhattan = " + board.manhattan());
                     StdOut.println("hamming   = " + board.hamming());
                     StdOut.print(childNode.board.toString());
@@ -81,7 +91,8 @@ public class Solver {
             GameNode twinParentNode = twinPq.delMin();
             if(twinParentNode.board.isGoal()) {
                 solveable = false;
-                solved = true;
+                // solved = true;
+                return null;
             }
 
             // StdOut.println("=================== Twin Parent  ====================");
@@ -105,12 +116,15 @@ public class Solver {
             }
             // StdOut.println("=================== Twin Child  ====================");
         }
+
+        return null;
     }
 
     private class GameNode {
         Board board;
         GameNode prev;
         int priority;
+        int moves = 0;
 
         public GameNode(Board board,Board prev) {
             this.board = board;
@@ -134,23 +148,38 @@ public class Solver {
 
     // min number of moves to solve initial board; -1 if unsolvable
     public int moves() {
-        if (!solveable) {
-            return -1;
-        }
-        return this.moves;
+        return solveable ? solvedPuzzle.moves : -1;
     }
 
     // sequence of boards in a shortest solution; null if unsolvable
     public Iterable<Board> solution() {
-        return boards;
+        if (!isSolvable()) return null;
+
+        Stack<Board> moves = new Stack<Board>();
+        while(solvedPuzzle != null) {
+            moves.push(solvedPuzzle.board);
+            solvedPuzzle = solvedPuzzle.prev;
+        }
+        // return moves;
+        return reverseOrder(moves);
+    }
+    private Stack<Board> reverseOrder(Stack<Board> stack){
+
+        Stack<Board> reverseMoves = new Stack<Board>();
+        while (!stack.empty()) {
+            Board b = stack.pop();
+            reverseMoves.push(b);
+        }
+        return reverseMoves;
     }
 
     // test client (see below) 
     public static void main(String[] args) {
 
-        In in = new In("./8puzzle/puzzle4x4-10.txt");
+        // // In in = new In("./8puzzle/puzzle4x4-unsolvable.txt");
+        // // In in = new In("./8puzzle/puzzle4x4-10.txt");
         // In in = new In("./8puzzle/puzzle04.txt");
-        // In in = new In(args[0]);
+        In in = new In(args[0]);
         int n = in.readInt();
 
         int[][] tiles = new int[n][n];
@@ -164,7 +193,7 @@ public class Solver {
         Board initial = new Board(tiles);
         Solver solver = new Solver(initial);
         if (!solver.isSolvable()) {
-            // StdOut.println(solver.moves());
+            StdOut.println(solver.moves());
             StdOut.println("No solution possible");
         } else {
             StdOut.println("Minimum number of moves = " + solver.moves());
@@ -172,7 +201,7 @@ public class Solver {
                 // StdOut.println(solver.moves());
                 StdOut.println(board);
             }
-            StdOut.println("Minimum number of moves = " + solver.moves());
+            // StdOut.println("Minimum number of moves = " + solver.moves());
         }
 
     }
