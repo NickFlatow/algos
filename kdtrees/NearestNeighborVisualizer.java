@@ -20,7 +20,8 @@ public class NearestNeighborVisualizer {
     public static void main(String[] args) {
 
         // initialize the two data structures with point from file
-        String filename = args[0];
+        // String filename = args[0];
+        String filename = "./kdtree/input10.txt";
         In in = new In(filename);
         PointSET brute = new PointSET();
         KdTree kdtree = new KdTree();
