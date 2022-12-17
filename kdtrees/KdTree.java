@@ -211,89 +211,58 @@ public class KdTree {
     }
     private Point2D findNearest(Point2D queryPoint, Point2D nearestPoint, double closest,Node node) {
 
+        if (node == null) return nearestPoint;
         if (queryPoint.distanceSquaredTo(node.point) < queryPoint.distanceSquaredTo(nearestPoint)) {
             nearestPoint = node.point;
             closest = queryPoint.distanceSquaredTo(node.point);
         }
-        // StdOut.println("node :" + node.point.toString());
-        // if (nearestPoint == null) StdOut.println("new nearest Point : null");
-        // else StdOut.println("new nearest Point :" + nearestPoint.toString());
-        // StdOut.println("new current closest :" + closest);
-        // StdOut.println();
-        
-        // if (node.compare_x_coord) {
-            
-        //     //if query point is left go left
-        //     // if (node.left != null && queryPoint.x() <= node.point.x()) {
-        //     // if (node.left != null) {
-        //         // Point2D testPoint = new Point2D(node.left.rect.xmax(),queryPoint.y());
-        //         // Point2D testPoint = new Point2D(node.rect.xmin(),queryPoint.y());
-        //     Point2D testPoint0 = new Point2D(node.point.x(),queryPoint.y());
-        //     // StdOut.println("testpoint: " + testPoint0.toString());
-        //     // StdOut.println("querypoint -> nearestPoint " + queryPoint.distanceSquaredTo(nearestPoint));
-        //     // StdOut.println("querypoint -> testPOint " + queryPoint.distanceSquaredTo(testPoint0));
-        //     if (node.left != null && queryPoint.distanceSquaredTo(nearestPoint) > queryPoint.distanceSquaredTo(testPoint0)) {
-        //         nearestPoint = findNearest(queryPoint, nearestPoint, closest, node.left);
-        //     }
-        //     //  }
-        //     //otherwise go right
-        //     // if (node.right != null) {
-        //     // Point2D testPoint1 = new Point2D(node.left.rect.xmin(),queryPoint.y());
-        //     Point2D testPoint1 = new Point2D(node.point.x(),queryPoint.y());
-        //     // StdOut.println("testpoint: " + testPoint1.toString());
-        //     // StdOut.println("querypoint -> nearestPoint " + queryPoint.distanceSquaredTo(nearestPoint));
-        //     // StdOut.println("querypoint -> testPOint " + queryPoint.distanceSquaredTo(testPoint1));
 
-        //     if (node.right != null && queryPoint.distanceSquaredTo(nearestPoint) > queryPoint.distanceSquaredTo(testPoint1)) {
-        //         nearestPoint = findNearest(queryPoint, nearestPoint, closest, node.right);
-        //     }
-        //     // }
-        // }else {
-        //     // if (node.left != null) {
-        //         // if (node.left != null && queryPoint.y() <= node.point.y()) {
-        //         // Point2D testPoint2 = new Point2D(queryPoint.x(), node.rect.ymax());
-        //     Point2D testPoint2 = new Point2D(queryPoint.x(), node.point.y());
-        //     // StdOut.println("testpoint: " + testPoint2.toString());
-        //     // StdOut.println("querypoint -> nearestPoint " + queryPoint.distanceSquaredTo(nearestPoint));
-        //     // StdOut.println("querypoint -> testPOint " + queryPoint.distanceSquaredTo(testPoint2));
-        //     if (node.left != null && queryPoint.distanceSquaredTo(nearestPoint) > queryPoint.distanceSquaredTo(testPoint2)) {
-        //         nearestPoint = findNearest(queryPoint, nearestPoint, closest, node.left);
-        //     }
-        //     // }
-        //     // if (node.right != null) {
-        //     Point2D testPoint = new Point2D(queryPoint.x(), node.point.y());
-        //     // StdOut.println("testpoint: " + testPoint.toString());
-        //     // StdOut.println("querypoint -> nearestPoint " + queryPoint.distanceSquaredTo(nearestPoint));
-        //     // StdOut.println("querypoint -> testPOint " + queryPoint.distanceSquaredTo(testPoint));
-        //     if (node.left != null && queryPoint.distanceSquaredTo(nearestPoint) > queryPoint.distanceSquaredTo(testPoint)) {
-        //     // if (node.right != null && queryPoint.y() >= node.point.y()) {
-        //         nearestPoint = findNearest(queryPoint, nearestPoint, closest, node.right);
-        //     }
-
-
-            // if (node.compare_x_coord) {
-        StdOut.println("node: " + node.point.toString());
-        if (node.left != null && node.right != null) {
-            if (node.left.rect.distanceSquaredTo(queryPoint) < node.right.rect.distanceSquaredTo(queryPoint)){
-                nearestPoint = findNearest(queryPoint, nearestPoint, closest, node.left);
+        //if querypoint is inside of the nodes rectangle expolre its subtress
+        if (node.rect.distanceSquaredTo(queryPoint) < closest) {
+            // Node near;
+            // Node far;
+            //go to the side closest to the queryPoint
+            // Point2D testpoint; 
+            if (node.compare_x_coord) {
+                // testpoint = new Point2D(node.point.x(),queryPoint.y());
+                if (queryPoint.x() < node.point.x()) {
+                    nearestPoint = findNearest(queryPoint, nearestPoint, closest, node.left);
+                    
+                    if (queryPoint.distanceSquaredTo(new Point2D(node.point.x(), queryPoint.y())) < queryPoint.distanceSquaredTo(nearestPoint)) {
+                        nearestPoint = findNearest(queryPoint, nearestPoint, closest, node.right);
+                    }
+                } else {
+                    nearestPoint = findNearest(queryPoint, nearestPoint, closest, node.right);
+                    
+                    if (queryPoint.distanceSquaredTo(new Point2D(node.point.x(), queryPoint.y())) < queryPoint.distanceSquaredTo(nearestPoint)) {
+                        nearestPoint = findNearest(queryPoint, nearestPoint, closest, node.left);
+                    }
+                }
             }else {
-                nearestPoint = findNearest(queryPoint, nearestPoint, closest, node.right);
+                if (queryPoint.y() < node.point.y()) {
+                    nearestPoint = findNearest(queryPoint, nearestPoint, closest, node.left);
+
+                    if (queryPoint.distanceSquaredTo(new Point2D(queryPoint.x(),node.point.y())) < queryPoint.distanceSquaredTo(nearestPoint)) {
+                        nearestPoint = findNearest(queryPoint, nearestPoint, closest, node.right);
+                    }
+                } else {
+                    nearestPoint = findNearest(queryPoint, nearestPoint, closest, node.right);
+
+                    if (queryPoint.distanceSquaredTo(new Point2D(queryPoint.x(),node.point.y())) < queryPoint.distanceSquaredTo(nearestPoint)) {
+                        nearestPoint = findNearest(queryPoint, nearestPoint, closest, node.left);
+                    }
+                }
             }
         }
-            // }else{
 
-            // }
 
-        // }
-        // }
         return nearestPoint;
-        // return;
     }
     // unit testing of the methods (optional) 
     public static void main(String[] args) {
 
         KdTree kd = new KdTree();
-        In in = new In("./kdtree/test5a.txt");
+        In in = new In("./kdtree/input10.txt");
         // int pointNum = 20;
         while (!in.isEmpty()) {  
             float x = in.readFloat();
@@ -305,18 +274,18 @@ public class KdTree {
             // pointNum--;
         }
         
-        // Point2D queryPoint = new Point2D(0.493, 0.926);
-        Point2D queryPoint = new Point2D(0.55, 0.27);
+        Point2D queryPoint = new Point2D(0.23, 0.78);
+        // Point2D queryPoint = new Point2D(0.55, 0.27);
         // Point2D queryPoint = new Point2D(0.381, 0.045);
 
-        // Point2D testPoint = new Point2D(0.22, 0.55);
-        // Point2D actualPoint = new Point2D(0.70,0.20);
+        // Point2D testPoint = new Point2D(0.70, 0.27);
+        // Point2D actualPoint = new Point2D(0.50,0.40);
         
         // Point2D testPoint1 = new Point2D(0.22,0.40);
         // Point2D actualPoint1 = new Point2D(0.40, 0.70);
         // Point2D queryPoint = new Point2D(0.111, 0.58);
-        StdOut.println(kd.nearest(queryPoint));
-        StdOut.println();
+        kd.nearest(queryPoint);
+        // StdOut.println();
      
         // RectHV r = new RectHV(0.03125, 0.5625, 0.65625, 0.625);
         // RectHV r = new RectHV(0.0, 0.0, 1.0, 1.0);
